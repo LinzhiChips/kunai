@@ -1,0 +1,32 @@
+Kunai - Daemon supervisor ("daemon lord")
+=========================================
+
+Copyright (C) 2021 Linzhi Ltd.
+
+This work is licensed under the terms of the MIT License.
+A copy of the license can be found in the file COPYING.txt
+
+
+Kunai is named after the lead character of the manga/anime series "Demon
+Lord, Retry", whose title quite accurately describes this daemon's function:
+it controls other daemons and restarts them if necessary.
+
+
+MQTT interface
+--------------
+
+This interface is experimental.
+
+/daemon/NAME/time	0 if stopped, else Unix time when started
+/daemon/NAME/log	real-time log
+/daemon/NAME/current	log buffer
+/daemon/NAME/current-get
+			writing anything copies the current log to */current
+/daemon/NAME/start	writing anything starts the daemon (if not running)
+/daemon/NAME/stop	writing anything stops the daemon)
+
+Not yet supported:
+
+/daemon/NAME/last
+/daemon/NAME/last-get
+

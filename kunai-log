@@ -1,0 +1,40 @@
+#!/bin/sh
+
+usage()
+{
+cat <<EOF 1>&2
+usage: $0 [-f] [-x] daemon-name
+
+-f  follow: keep running and print new output as it arrives
+-x  set -x to trace shell commands
+EOF
+	exit 1
+}
+
+follow=false
+while [ "$1" ]; do
+	case "$1" in
+	-f)	follow=true
+		shift;;
+	-x)	set -x
+		shift;;
+	-*)	usage;;
+	*)	break;;
+	esac
+done
+
+[ "$1" ] || usage
+[ "$2" ] && usage
+
+# Use of -d: see https://github.com/eclipse/mosquitto/issues/1418
+mosquitto_sub -E -d -c -i $$ -t "/daemon/$1/current" -q 2 >/dev/null || exit
+mosquitto_pub -t "/daemon/$1/current-get" -m x -q 1 || exit
+mosquitto_sub -c -C 1 -i $$ -N -t "/daemon/$1/current" -q 2 || exit
+# i guess we need to clean up explicitly
+mosquitto_sub -E -d -i $$ -t "/daemon/$1/current" >/dev/null || exit
+
+# @@@ known issue: we don't see anything logged between they .../current-get
+# and the subscription to .../log
+if $follow; then
+	mosquitto_sub -N -t "/daemon/$1/log" -q 2 || exit
+fi
