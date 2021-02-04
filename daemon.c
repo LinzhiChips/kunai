@@ -56,7 +56,7 @@ void daemon_err(struct daemon *d, const char *fmt, ...)
 	va_start(ap, fmt);
 	vasprintf(&s, fmt, ap);
 	va_end(ap);
-	fprintf(stderr, "%s: %s\n", d->name, s);
+	fprintf(stderr, "%s: %s", d->name, s);
 	daemon_log(d, s, strlen(s));
 	free(s);
 }
@@ -116,7 +116,7 @@ void daemon_start(struct daemon *d)
 		exit(1);
 	}
 	d->cycle = 0;
-	daemon_err(d, "starting \"%s\", %s (%lu)",
+	daemon_err(d, "starting \"%s\", %s (%lu)\n",
 	    d->start, now_string(), (unsigned long) ts.tv_sec);
 	if (run(d, d->start))
 		mqtt_printf_arg(MQTT_TOPIC_TIME, qos_ack, 1, d->name, "%lu",

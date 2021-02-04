@@ -93,7 +93,7 @@ bool run(struct daemon *d, const char *cmd)
 bool stop(struct daemon *d)
 {
 	if (kill(-d->pid, SIGTERM) < 0) {
-		daemon_err(d, "kill(%d): %s", (int) -d->pid, strerror(errno));
+		daemon_err(d, "kill(%d): %s\n", (int) -d->pid, strerror(errno));
 		return 0;
 	}
 	return 1;
@@ -126,12 +126,12 @@ void reap(struct daemon *d)
 	}
 	t = now_string();
 	if (WIFEXITED(status))
-		daemon_err(d, "exit status %d, %s",
+		daemon_err(d, "exit status %d, %s\n",
 		    WEXITSTATUS(status), t);
 	 else if (WIFSIGNALED(status))
-		daemon_err(d, "signal %s (%d), %s",
+		daemon_err(d, "signal %s (%d), %s\n",
 		    strsignal(WTERMSIG(status)), WTERMSIG(status), t);
 	else
-		daemon_err(d, "exit status (undecoded) %d, %s", status, t);
+		daemon_err(d, "exit status (undecoded) %d, %s\n", status, t);
 	daemon_restart_if_cycling(d);
 }
