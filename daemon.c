@@ -71,8 +71,13 @@ void daemon_current_get(struct daemon *d)
 
 void daemon_eof(struct daemon *d)
 {
-	reap(d);
+	/*
+	 * Signal "stopped" before we reap, because, if we're cycling, reaping
+	 * will try to restart the daemon and immediately report that it's
+	 * running. So we must make sure we don't signal "stopped" afterwards.
+	 */
 	mqtt_printf_arg(MQTT_TOPIC_TIME, qos_ack, 1, d->name, "0");
+	reap(d);
 }
 
 
