@@ -57,11 +57,11 @@ void mqtt_loop(void)
 			i = 1;
 			for (d = daemons; d; d = d->next)
 				if (d->pid) {
-					if (fds[i].revents &
+					if (fds[i].revents & POLLIN)
+						daemon_in(d);
+					else if (fds[i].revents &
 					    (POLLHUP | POLLERR))
 						daemon_eof(d);
-					else if (fds[i].revents & POLLIN)
-						daemon_in(d);
 					i++;
 				}
 		}
