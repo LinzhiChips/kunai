@@ -29,7 +29,10 @@ static void start(void)
 	struct daemon *d;
 
 	for (d = daemons; d; d = d->next)
-		daemon_start(d);
+		if (d->cycle)
+			daemon_start(d);
+		else
+			daemon_stopped(d);
 	mqtt_loop();
 }
 

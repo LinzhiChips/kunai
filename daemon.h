@@ -29,7 +29,8 @@ struct daemon {
 
 	pid_t		pid;		/* 0 if not running */
 	int		out;		/* stdout and stderr */
-	bool		cycle;		/* restart when kill is confirmed */
+	bool		cycle;		/* restart when kill is confirmed;
+					   on start: start this daemon */
 
 	char		buf[BUF_SIZE];	/* input line buffer */
 	unsigned	buf_offset;
@@ -53,6 +54,7 @@ void daemon_log(struct daemon *d, const char *s, unsigned len);
 void daemon_err(struct daemon *d, const char *fmt, ...);
 
 void daemon_current_get(struct daemon *d);
+void daemon_stopped(struct daemon *d);
 void daemon_eof(struct daemon *d);
 void daemon_in(struct daemon *d);
 

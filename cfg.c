@@ -32,6 +32,7 @@ void cfg_parse(FILE *file)
 {
 	struct daemon *d;
 	char buf[MAX_LINE];
+	const char *cmd;
 	char *end;
 	size_t blanks, name_len;
 
@@ -51,8 +52,23 @@ void cfg_parse(FILE *file)
 		}
 		name_len = strcspn(buf, WHITESPACE);
 		buf[name_len] = 0;
+
+		cmd = buf + name_len + 1;
+		blanks = strspn(cmd, WHITESPACE);
+		if (blanks == strlen(cmd)) {
+			fprintf(stderr, "no command for %s\n", buf);
+			exit(1);
+		}
+		cmd += blanks;
+
 		d = daemon_new(stralloc(buf));
-		d->start = stralloc(buf + name_len + 1);
+		if (*cmd == '!') {
+			d->start = stralloc(cmd + 1);
+			d->cycle = 0;
+		} else {
+			d->start = stralloc(cmd);
+			d->cycle = 1;
+		}
 		if (verbose)
 			fprintf(stderr, "added \"%s\" with \"%s\"\n",
 			    d->name, d->start);
