@@ -52,10 +52,15 @@ void daemon_err(struct daemon *d, const char *fmt, ...)
 {
 	va_list ap;
 	char *s;
+	int retval;
 
 	va_start(ap, fmt);
-	vasprintf(&s, fmt, ap);
+	retval = vasprintf(&s, fmt, ap);
 	va_end(ap);
+	if (retval < 0) {
+		perror("vasprintf");
+		return;
+	}
 	fprintf(stderr, "%s: %s", d->name, s);
 	daemon_log(d, s, strlen(s));
 	free(s);
